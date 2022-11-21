@@ -12,7 +12,7 @@ bash_profile=$HOME/.bash_profile
 if [ -f "$bash_profile" ]; then
     . $HOME/.bash_profile
 fi
-sleep 1 && curl -s https://raw.githubusercontent.com/nodesshablya/nibiru_shablya_testnet/main/shablya.sh | bash && sleep 1
+sleep 5 && curl -s https://raw.githubusercontent.com/nodesshablya/nibiru_shablya_testnet/main/shablya.sh | bash && sleep 5
 
 
 if [ ! $NIBIRU_NODENAME ]; then
