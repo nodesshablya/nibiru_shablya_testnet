@@ -12,7 +12,7 @@ bash_profile=$HOME/.bash_profile
 if [ -f "$bash_profile" ]; then
     . $HOME/.bash_profile
 fi
-sleep 5 && curl -s https://raw.githubusercontent.com/nodesshablya/nibiru_shablya_testnet/main/shablya.sh | bash && sleep 5
+sleep 1 && curl -s https://raw.githubusercontent.com/nodesshablya/nibiru_shablya_testnet/main/shablya.sh | bash && sleep 1
 
 
 if [ ! $NIBIRU_NODENAME ]; then
@@ -70,3 +70,34 @@ nibid tendermint unsafe-reset-all
 echo -e '\n\e[42mRunning\e[0m\n' && sleep 1
 echo -e '\n\e[42mCreating a service\e[0m\n' && sleep 1
 
+echo "[Unit]
+Description=Nibiru Node
+After=network.target
+
+[Service]
+User=$USER
+Type=simple
+ExecStart=/usr/local/bin/nibid start
+Restart=on-failure
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target" > $HOME/nibid.service
+sudo mv $HOME/nibid.service /etc/systemd/system
+sudo tee <<EOF >/dev/null /etc/systemd/journald.conf
+Storage=persistent
+EOF
+echo -e '\n\e[42mRunning a service\e[0m\n' && sleep 1
+sudo systemctl restart systemd-journald
+sudo systemctl daemon-reload
+sudo systemctl enable nibid
+sudo systemctl restart nibid
+
+echo -e '\n\e[42mCheck node status\e[0m\n' && sleep 1
+if [[ `service nibid status | grep active` =~ "running" ]]; then
+  echo -e "Your nibiru node \e[32minstalled and works\e[39m!"
+  echo -e "You can check node status by the command \e[7mservice nibid status\e[0m"
+  echo -e "Press \e[7mQ\e[0m for exit from status menu"
+else
+  echo -e "Your nibiru node \e[31mwas not installed correctly\e[39m, please reinstall."
+fi
